@@ -9,6 +9,12 @@ import java.util.List;
  */
 public class ValidationErrorFunction implements GeneralizationErrorFunction {
     public double error(List<Enum[]> samples, List<Boolean> labels, DecisionTree tree) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    	int err =0;
+    	for (int i=0;i<samples.size();i++){
+    		if (tree.guessLabel(samples.get(i)) != labels.get(i))
+    			err++;
+    	}
+    	
+        return err/labels.size();  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
