@@ -8,7 +8,14 @@ import java.util.List;
  * Time: 06:15:52 <br/>
  */
 public class MDLErrorFunction implements GeneralizationErrorFunction {
+	
+	private static final double delta = 0.05;
     public double error(List<Enum[]> samples, List<Boolean> labels, DecisionTree tree) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    	
+    	int d  = samples.get(0).length;
+    	int n = tree.size();
+    	int m = labels.size();
+    	return Math.sqrt((n*(Math.log(d)/Math.log(2)+1)+Math.log(2/delta)/Math.log(2))/(2*m));
+    	//To change body of implemented methods use File | Settings | File Templates.
     }
 }
