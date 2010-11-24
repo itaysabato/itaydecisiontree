@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class TrainingGainFunction implements GainFunction {
 	}
 	
     public double gain(List<Enum[]> samples, List<Boolean> labels, int featureIndex) {
-    	
+
     	Enum[] domain = (Enum[]) samples.get(0)[featureIndex].getDeclaringClass().getEnumConstants();
 		List<List<Boolean>> values = new LinkedList<List<Boolean>>();
 		int[] proportions = new int[domain.length];
@@ -48,7 +49,7 @@ public class TrainingGainFunction implements GainFunction {
 		for (int l=0;l<domain.length;l++){
 			g -= (proportions[l]/(double)size)*c(proportion(values.get(l)));
 		}
-        return g;  
+        return Math.max(g,0);
     }
     
     public String toString(){
