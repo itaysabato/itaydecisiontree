@@ -75,22 +75,41 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     public void plot(PrintStream printTo) {
-
         List<Node> nodes = TreeBuilder.nodesArray(this);
         if(nodes.isEmpty()) return;
-        int[] degrees = new int[nodes.size()];
-        for (int i=nodes.size()-1; i>=0; i--) {
-            degrees[i] = degree(i,degrees,nodes);
-        }
-        int level = degrees[0];
-        for (int j=0; j<nodes.size(); j++) {
-            if (degrees[j]<level) {
+        int[] depths = new int[nodes.size()];
+        checkDepth(depths,nodes,root,0) ;
+        int i = 0;
+        int prev = 0;
+        for(;i<depths.length;i++)  printTo.print(depths[i]);
+        printTo.println();
+        i = 0;
+        for(;i<nodes.size();i++) {
+            if(prev!=depths[i]) {
                 printTo.println();
-                printTo.println();
-                level = degrees[j];
+                prev = depths[i] ;
             }
-            printTo.print(nodes.get(j).feature + "?\t");
+            if(nodes.get(i).isLeaf())   printTo.print("<"+nodes.get(i).feature+"> \t");
+            else printTo.print(nodes.get(i).feature+"? \t");
+        }                                                          
+        printTo.println();
+    }
+
+    public void print() {
+        printHelp(root,0);
+    }
+
+    private void printHelp(Node node,int i) {
+        if(node.isLeaf()) {
+            System.out.print("<"+node.feature+">("+i+"), ");
         }
+        if(i==3)  {
+            System.out.print(node.feature+"?("+i+"), ");
+        }
+        for(Node child:node.children) {
+         printHelp(child,i+1);
+        }
+         System.out.print(node.feature+"?("+i+"), ");
     }
 
     public DecisionTreeImpl prune(List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
@@ -211,6 +230,18 @@ public class DecisionTreeImpl implements DecisionTree {
         }
     }
 
+    
+    
+        private void checkDepth(int[] depths, List<Node> nodes, Node node,int i) {
+        if(node.isLeaf()) {
+            depths[nodes.indexOf(node)] = i;
+            return;
+        }
+         depths[nodes.indexOf(node)] = i;
+        for(Node child:node.children)
+            checkDepth(depths,nodes,child,i+1); 
+    }
+    
     static class Node {
         int feature = 0;
         List<Node> children = null;
