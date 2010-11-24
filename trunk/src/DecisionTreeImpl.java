@@ -91,7 +91,124 @@ public class DecisionTreeImpl implements DecisionTree {
             }
             printTo.print(nodes.get(j).feature + "?\t");
         }
-        return;
+    }
+
+    public DecisionTreeImpl prune(List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
+        if(root.isLeaf()) return this;
+
+        int i = 0;
+        for(Node child: root.children){
+            prune(root, i, child, samples, labels, function);
+            i++;
+        }
+        int best = -1;
+        double minError = function.error(samples,labels,this);
+        double result = 0;
+        i = 0;
+        Node temp = root;
+        for(Node child: temp.children){
+            root = child;
+            result = function.error(samples,labels,this);
+            if(result <= minError){
+                best = i;
+                minError = result;
+            }
+            i++;
+        }
+        root = temp;
+        List<Node> childrenTemp =  root.children;
+        int featureTemp  = root.feature;
+
+        root.children = null;
+        root.feature = 0;
+        result = function.error(samples,labels,this);
+        if(result <= minError){
+            best = -2;
+            minError = result;
+        }
+
+                root.feature = 1;
+        result = function.error(samples,labels,this);
+        if(result <= minError){
+            best = -3;
+        }
+
+        if(best >= 0){
+            root = childrenTemp.get(best);
+        }
+        else if(best == -1){
+            root.children = childrenTemp;
+            root.feature = featureTemp;
+        }
+        else if(best == -2){
+            root.feature = 0;
+        }
+        else {
+            root.feature = 1;
+        }
+         return this;
+    }
+
+    private void prune(Node parent, int i, Node current, List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
+        if(current.isLeaf()) return;
+
+        int j = 0;
+        for(Node child: current.children){
+            prune(current, j, child, samples, labels, function);
+            j++;
+        }
+
+        double minError = function.error(samples,labels,this);
+        int best = -1;
+
+        List<Node> childrenTemp =  current.children;
+        int featureTemp  = current.feature;
+        current.children = null;
+        double result = 0;
+
+        current.feature = 0;
+        result =  function.error(samples,labels,this);
+        if(result <= minError){
+            minError = result;
+            best = -2;
+        }
+
+        current.feature = 1;
+        result =  function.error(samples,labels,this);
+        if(result <= minError){
+            minError = result;
+            best = -3;
+        }
+
+        j = 0;
+        for(Node child: current.children){
+            parent.children.remove(i);
+            parent.children.add(i,child);
+            result =  function.error(samples,labels,this);
+            if(result <= minError){
+                minError = result;
+                best = j;
+            }
+            j++;
+        }
+        parent.children.remove(i);
+
+        if(best >= 0) {
+            parent.children.add(i,childrenTemp.get(best));
+        }
+        else {
+            parent.children.add(i,current);
+            if(best == -1){
+                current.children = childrenTemp;
+                current.feature = featureTemp;
+            }
+            else if(best == -2){
+                current.feature = 0;
+            }
+            else {
+                current.feature = 1;
+            }
+        }
     }
 
     static class Node {

@@ -125,30 +125,7 @@ public class TreeBuilder {
     }
 
     public DecisionTreeImpl pruneTree(DecisionTreeImpl tree, List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
-        DecisionTreeImpl tree1 = new DecisionTreeImpl(tree);
-        List<DecisionTreeImpl.Node> nodes = nodesArray(tree1);
-        int i = 0;
-        int minFeature = 0;
-        List<DecisionTreeImpl.Node> minChildren = null,originalChildren = null;
-        double minValue = 0;
-        DecisionTreeImpl.Node prev = null, current = null;
-        for(;i<nodes.size();i++) {
-            //initialize:
-            current = nodes.get(i);
-            if(current.isLeaf()) continue;
-            minFeature = current.feature;
-            minChildren = current.children;
-            originalChildren = current.children;
-            minValue = function.error(samples, labels,tree1);
-            //replacing with:
-            
-
-            
-
-            
-        }
-        
-        return null;
+        return new DecisionTreeImpl(tree).prune(samples, labels, function);
     }
 
     static  List<DecisionTreeImpl.Node> nodesArray(DecisionTreeImpl tree) {
