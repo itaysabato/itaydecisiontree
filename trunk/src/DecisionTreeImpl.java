@@ -116,7 +116,8 @@ public class DecisionTreeImpl implements DecisionTree {
         if(root.isLeaf()) return this;
 
         int i = 0;
-        for(Node child: root.children){
+        for( ; i < root.children.size(); i++){
+            Node child =  root.children.get(i);
             prune(root, i, child, samples, labels, function);
             i++;
         }
@@ -172,9 +173,9 @@ public class DecisionTreeImpl implements DecisionTree {
         if(current.isLeaf()) return;
 
         int j = 0;
-        for(Node child: current.children){
+        for( ; j < current.children.size(); j++){
+            Node child = current.children.get(j);
             prune(current, j, child, samples, labels, function);
-            j++;
         }
 
         double minError = function.error(samples,labels,this);
@@ -200,7 +201,7 @@ public class DecisionTreeImpl implements DecisionTree {
         }
 
         j = 0;
-        for(Node child: current.children){
+        for(Node child: childrenTemp){
             parent.children.remove(i);
             parent.children.add(i,child);
             result =  function.error(samples,labels,this);
