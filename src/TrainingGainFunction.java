@@ -48,8 +48,7 @@ public class TrainingGainFunction implements GainFunction {
 		for (int l=0;l<domain.length;l++){
 			g -= (proportions[l]/(double)size)*c(proportion(values.get(l)));
 		}
-    	if(g<0) System.out.println("train-neg");
-        return g;  //To change body of implemented methods use File | Settings | File Templates.
+        return g;  
     }
     
     public String toString(){

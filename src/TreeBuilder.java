@@ -36,7 +36,6 @@ public class TreeBuilder {
             return;
         }
         int idx = maxIdx(indexes , samples,labels,function);
-        System.out.println("index"+idx);
         if(featureConstant(samples,idx)) {
             node.feature = majority(labels);
             return;
@@ -51,7 +50,6 @@ public class TreeBuilder {
         List<Enum[]> tempSamples = null;
         Enum[] answers = (Enum[]) samples.get(0)[0].getDeclaringClass().getEnumConstants();
         for(Enum e:answers)  {
-            //System.out.println(e);
             child = new DecisionTreeImpl.Node();
             node.children.add(child);
             //trims the sets:
@@ -72,7 +70,7 @@ public class TreeBuilder {
                 result.add(samples.get(i));
                 samples.remove(i);
             }
-            else { i++;    /*System.out.println("ffff");*/}
+            else i++;
         }
         return result;
     }
@@ -86,7 +84,7 @@ public class TreeBuilder {
                 result.add(labels.get(j));
                 labels.remove(j);
             }
-            else { j++;    /*System.out.println("ffff");*/}
+            else  j++;
         }
             return result;
     }
@@ -132,6 +130,7 @@ public class TreeBuilder {
         ArrayList<DecisionTreeImpl.Node> array = new ArrayList<DecisionTreeImpl.Node>();
         array.add(tree.root);
         int i = 0;
+        System.out.println("size:"+tree.size());
         for(;i<tree.size();i++) {
             List<DecisionTreeImpl.Node> children = array.get(i).children;
             if(children==null) continue;

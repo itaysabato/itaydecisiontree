@@ -35,9 +35,14 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     void refreshSize(Node node) {
+        size = 0;
+        refreshSizeHelp( node);
+    }
+
+      void refreshSizeHelp(Node node) {
         size++;
         if(node.children==null) return;
-        for(Node e:node.children)  refreshSize(e);
+        for(Node e:node.children)  refreshSizeHelp(e);
     }
 
     public int size() {
@@ -81,9 +86,6 @@ public class DecisionTreeImpl implements DecisionTree {
         checkDepth(depths,nodes,root,0) ;
         int i = 0;
         int prev = 0;
-        for(;i<depths.length;i++)  printTo.print(depths[i]);
-        printTo.println();
-        i = 0;
         for(;i<nodes.size();i++) {
             if(prev!=depths[i]) {
                 printTo.println();
@@ -95,39 +97,25 @@ public class DecisionTreeImpl implements DecisionTree {
         printTo.println();
     }
 
-    public void print() {
-        printHelp(root,0);
-    }
-
-    private void printHelp(Node node,int i) {
-        if(node.isLeaf()) {
-            System.out.print("<"+node.feature+">("+i+"), ");
-        }
-        if(i==3)  {
-            System.out.print(node.feature+"?("+i+"), ");
-        }
-        for(Node child:node.children) {
-         printHelp(child,i+1);
-        }
-         System.out.print(node.feature+"?("+i+"), ");
-    }
-
     public DecisionTreeImpl prune(List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
         if(root.isLeaf()) return this;
 
         int i = 0;
         for( ; i < root.children.size(); i++){
             Node child =  root.children.get(i);
+            refreshSize(root);
             prune(root, i, child, samples, labels, function);
             i++;
         }
         int best = -1;
+        refreshSize(root);
         double minError = function.error(samples,labels,this);
         double result = 0;
         i = 0;
         Node temp = root;
         for(Node child: temp.children){
             root = child;
+            refreshSize(root);
             result = function.error(samples,labels,this);
             if(result <= minError){
                 best = i;
@@ -141,13 +129,15 @@ public class DecisionTreeImpl implements DecisionTree {
 
         root.children = null;
         root.feature = 0;
+        refreshSize(root);
         result = function.error(samples,labels,this);
         if(result <= minError){
             best = -2;
             minError = result;
         }
 
-                root.feature = 1;
+        root.feature = 1;
+        refreshSize(root);
         result = function.error(samples,labels,this);
         if(result <= minError){
             best = -3;
@@ -166,7 +156,8 @@ public class DecisionTreeImpl implements DecisionTree {
         else {
             root.feature = 1;
         }
-         return this;
+        refreshSize(root);
+        return this;
     }
 
     private void prune(Node parent, int i, Node current, List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
@@ -177,7 +168,7 @@ public class DecisionTreeImpl implements DecisionTree {
             Node child = current.children.get(j);
             prune(current, j, child, samples, labels, function);
         }
-
+        refreshSize(root);
         double minError = function.error(samples,labels,this);
         int best = -1;
 
@@ -187,6 +178,7 @@ public class DecisionTreeImpl implements DecisionTree {
         double result = 0;
 
         current.feature = 0;
+        refreshSize(root);
         result =  function.error(samples,labels,this);
         if(result <= minError){
             minError = result;
@@ -194,6 +186,7 @@ public class DecisionTreeImpl implements DecisionTree {
         }
 
         current.feature = 1;
+        refreshSize(root);
         result =  function.error(samples,labels,this);
         if(result <= minError){
             minError = result;
@@ -204,6 +197,7 @@ public class DecisionTreeImpl implements DecisionTree {
         for(Node child: childrenTemp){
             parent.children.remove(i);
             parent.children.add(i,child);
+            refreshSize(root);
             result =  function.error(samples,labels,this);
             if(result <= minError){
                 minError = result;
@@ -229,6 +223,7 @@ public class DecisionTreeImpl implements DecisionTree {
                 current.feature = 1;
             }
         }
+        refreshSize(root);
     }
 
     

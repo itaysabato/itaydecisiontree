@@ -49,7 +49,7 @@ public class GiniGainFunction implements GainFunction {
 			g -= (proportions[l]/(double)size)*gini(proportion(values.get(l)));
 		}
 
-        if(g<0) System.out.println("gini-neg");
+    
     	return g;  //To change body of implemented methods use File | Settings | File Templates.
     }
     
