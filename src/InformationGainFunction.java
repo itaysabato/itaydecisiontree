@@ -19,8 +19,8 @@ public class InformationGainFunction implements GainFunction {
 			if (lab) 	proportion++;
 		}
         if(proportion ==0 || proportion == labelSet.size()) return 0;
-		double p1 = proportion/labelSet.size();
-		double p2 = (labelSet.size() - proportion)/labelSet.size();
+		double p1 = proportion/(double)labelSet.size();
+		double p2 = (labelSet.size() - proportion)/(double)labelSet.size();
 		return (-p1*Math.log(p1)/Math.log(2) -p2*Math.log(p2)/Math.log(2));
 	}
 	
