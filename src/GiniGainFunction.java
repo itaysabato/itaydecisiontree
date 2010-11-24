@@ -18,7 +18,7 @@ public class GiniGainFunction implements GainFunction {
 			if(b) p++;
 		}
 		
-		return p/labelSet.size();
+		return p/(double)labelSet.size();
 		
 	}
 	
@@ -46,9 +46,10 @@ public class GiniGainFunction implements GainFunction {
 		double g = gini(proportion(labels));
 		int size = labels.size();
 		for (int l=0;l<domain.length;l++){
-			g -= (proportions[l]/size)*gini(proportion(values.get(l)));
+			g -= (proportions[l]/(double)size)*gini(proportion(values.get(l)));
 		}
-    	
+
+        if(g<0) System.out.println("gini-neg");
     	return g;  //To change body of implemented methods use File | Settings | File Templates.
     }
     

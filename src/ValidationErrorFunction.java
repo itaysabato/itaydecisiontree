@@ -15,6 +15,6 @@ public class ValidationErrorFunction implements GeneralizationErrorFunction {
     			err++;
     	}
     	
-        return err/labels.size();  //To change body of implemented methods use File | Settings | File Templates.
+        return err/(double)labels.size();  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
