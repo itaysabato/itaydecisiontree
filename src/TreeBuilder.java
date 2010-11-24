@@ -36,10 +36,12 @@ public class TreeBuilder {
             return;
         }
         int idx = maxIdx(indexes , samples,labels,function);
+        System.out.println("index"+idx);
         if(featureConstant(samples,idx)) {
             node.feature = majority(labels);
             return;
         }
+
         //building the children:
         node.feature = idx;
         node.children = new ArrayList<DecisionTreeImpl.Node>();
@@ -47,23 +49,39 @@ public class TreeBuilder {
         indexes.remove(idx);
         Enum[] answers = (Enum[]) samples.get(0)[0].getDeclaringClass().getEnumConstants();
         for(Enum e:answers)  {
+            //System.out.println(e);
             child = new DecisionTreeImpl.Node();
             node.children.add(child);
             //trims the sets:
-            trimSet(samples,labels,idx,e);
+           // trimLables(samples,labels,idx,e);
+            trimSamples(samples,idx,e);
+
             ID3(child,indexes,samples,labels,function);
         }
     }
 
-    private void trimSet(List<Enum[]> samples, List<Boolean> labels, int idx, Enum e) {
+    private List<Enum[]>    trimSamples(List<Enum[]> samples, int idx, Enum e) {
         int i = 0;
+        ArrayList<Enum[]> result = new ArrayList<Enum[]>();
         for(;i<samples.size();) {
             if(!samples.get(i)[idx].equals(e)) {
                 samples.remove(i);
+            }
+            else { i++;    /*System.out.println("ffff");*/}
+        }
+        return result;
+    }
+
+        private List<Boolean>  trimLabels(List<Enum[]> samples, List<Boolean> labels, int idx, Enum e) {
+        int i = 0;
+        ArrayList<Boolean> result = new ArrayList<Boolean>();
+        for(;i<samples.size();) {
+            if(!samples.get(i)[idx].equals(e)) {
                 labels.remove(i);
             }
-            else i++;
+            else { i++;    /*System.out.println("ffff");*/}
         }
+            return result;
     }
 
     private boolean featureConstant(List<Enum[]> samples, int idx) {
@@ -71,6 +89,7 @@ public class TreeBuilder {
         for(Enum[] e:samples) {
             if(!e[idx].equals(featureValue)) return false;
         }
+        System.out.println("constantRRR");
         return true;
     }
 
@@ -100,7 +119,28 @@ public class TreeBuilder {
     }
 
     public DecisionTreeImpl pruneTree(DecisionTreeImpl tree, List<Enum[]> samples, List<Boolean> labels, GeneralizationErrorFunction function) {
-        List<DecisionTreeImpl.Node> nodes = nodesArray(tree);
+        DecisionTreeImpl tree1 = new DecisionTreeImpl(tree);
+        List<DecisionTreeImpl.Node> nodes = nodesArray(tree1);
+        int i = 0;
+        int minFeature = 0;
+        List<DecisionTreeImpl.Node> minChildren = null,originalChildren = null;
+        double minValue = 0;
+        DecisionTreeImpl.Node prev = null, current = null;
+        for(;i<nodes.size();i++) {
+            //initialize:
+            current = nodes.get(i);
+            if(current.isLeaf()) continue;
+            minFeature = current.feature;
+            minChildren = current.children;
+            originalChildren = current.children;
+            minValue = function.error(samples, labels,tree1);
+            //replacing with:
+            
+
+            
+
+            
+        }
         
         return null;
     }
