@@ -57,22 +57,22 @@ public class Driver {
         System.out.println("Train Error: "+errorFunction.error(trainSet, trainSetLabels, tree));
         System.out.println("Test Error: "+errorFunction.error(testSet, testSetLabels, tree));
 
-        DecisionTree validationTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new ValidationErrorFunction());
+        DecisionTreeImpl validationTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new ValidationErrorFunction());
         System.out.println("Pruned tree using "+gainFunction+" gain function and Validation Error:");
         validationTree.plot(System.out);
 
-        testError =  errorFunction.error(testSet, testSetLabels, tree);
+        testError =  errorFunction.error(testSet, testSetLabels, validationTree);
         System.out.println("Test Error: "+testError);
 
         totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
         totalError /= testSet.size() + trainSet.size();
         System.out.println("Total Error (Cross Validation): "+totalError);
 
-        DecisionTree MDLTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new MDLErrorFunction());
+        DecisionTreeImpl MDLTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new MDLErrorFunction());
         System.out.println("Pruned tree using "+gainFunction+" gain function and MDL Error:");
         MDLTree.plot(System.out);
 
-        testError =  errorFunction.error(testSet, testSetLabels, tree);
+        testError =  errorFunction.error(testSet, testSetLabels, MDLTree);
         System.out.println("Test Error: "+testError);
 
         totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
