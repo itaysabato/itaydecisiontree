@@ -46,7 +46,7 @@ public class InformationGainFunction implements GainFunction {
 		int size = labels.size();
 		for(int l=0;l<domain.length;l++)
 			g -= (proportions[l]/size)*entropy(values.get(l));
-		
+		if(g<0) System.out.println("info-neg");
         return g;  //To change body of implemented methods use File | Settings | File Templates.
     }
     
