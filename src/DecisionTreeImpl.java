@@ -20,6 +20,7 @@ public class DecisionTreeImpl implements DecisionTree {
     public  DecisionTreeImpl(DecisionTreeImpl tree) {
         root = new Node();
         copy(root,tree.root);
+        size = tree.size;
     }
 
     void copy(Node node1,Node node2) {
@@ -63,8 +64,34 @@ public class DecisionTreeImpl implements DecisionTree {
         else return true;
     }
 
+    private int degree(int index,int[] degrees,List<Node> nodes){
+        if (nodes.get(index).isLeaf()) {
+            return 0;
+        }
+        else {
+            int i = nodes.indexOf(nodes.get(index).children.get(0));
+            return 1+degrees[i];
+        }
+    }
+
     public void plot(PrintStream printTo) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        List<Node> nodes = TreeBuilder.nodesArray(this);
+        if(nodes.isEmpty()) return;
+        int[] degrees = new int[nodes.size()];
+        for (int i=nodes.size()-1; i>=0; i--) {
+            degrees[i] = degree(i,degrees,nodes);
+        }
+        int level = degrees[0];
+        for (int j=0; j<nodes.size(); j++) {
+            if (degrees[j]<level) {
+                printTo.println();
+                printTo.println();
+                level = degrees[j];
+            }
+            printTo.print(nodes.get(j).feature + "?\t");
+        }
+        return;
     }
 
     static class Node {
