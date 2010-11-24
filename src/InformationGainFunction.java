@@ -16,9 +16,9 @@ public class InformationGainFunction implements GainFunction {
 
         int proportion = 0;
 		for (Boolean lab:labelSet) {
-			if (lab) 
-				proportion++;
+			if (lab) 	proportion++;
 		}
+        if(proportion ==0 || proportion == labelSet.size()) return 0;
 		double p1 = proportion/labelSet.size();
 		double p2 = (labelSet.size() - proportion)/labelSet.size();
 		return (-p1*Math.log(p1)/Math.log(2) -p2*Math.log(p2)/Math.log(2));
