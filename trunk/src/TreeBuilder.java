@@ -47,16 +47,19 @@ public class TreeBuilder {
         node.children = new ArrayList<DecisionTreeImpl.Node>();
         DecisionTreeImpl.Node child = null;
         indexes.remove(idx);
+        List<Boolean> tempLabels = null;
+        List<Enum[]> tempSamples = null;
         Enum[] answers = (Enum[]) samples.get(0)[0].getDeclaringClass().getEnumConstants();
         for(Enum e:answers)  {
             //System.out.println(e);
             child = new DecisionTreeImpl.Node();
             node.children.add(child);
             //trims the sets:
-           // trimLables(samples,labels,idx,e);
-            trimSamples(samples,idx,e);
-
+            tempLabels = trimLabels(samples,labels,idx,e);
+            tempSamples = trimSamples(samples,idx,e);
             ID3(child,indexes,samples,labels,function);
+            samples.addAll(tempSamples);
+            labels.addAll(tempLabels);
         }
     }
 
@@ -65,6 +68,7 @@ public class TreeBuilder {
         ArrayList<Enum[]> result = new ArrayList<Enum[]>();
         for(;i<samples.size();) {
             if(!samples.get(i)[idx].equals(e)) {
+                result.add(samples.get(i));
                 samples.remove(i);
             }
             else { i++;    /*System.out.println("ffff");*/}
@@ -75,11 +79,13 @@ public class TreeBuilder {
         private List<Boolean>  trimLabels(List<Enum[]> samples, List<Boolean> labels, int idx, Enum e) {
         int i = 0;
         ArrayList<Boolean> result = new ArrayList<Boolean>();
-        for(;i<samples.size();) {
+        int j = 0;
+        for(;i<samples.size();i++) {
             if(!samples.get(i)[idx].equals(e)) {
-                labels.remove(i);
+                result.add(labels.get(j));
+                labels.remove(j);
             }
-            else { i++;    /*System.out.println("ffff");*/}
+            else { j++;    /*System.out.println("ffff");*/}
         }
             return result;
     }
