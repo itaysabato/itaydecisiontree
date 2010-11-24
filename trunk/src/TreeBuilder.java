@@ -27,7 +27,7 @@ public class TreeBuilder {
                      GainFunction function) {
         //stop conditions:
         if(numLabels(labels,true)==labels.size() || numLabels(labels,false)==labels.size()) {
-           if(labels.get(0))  node.feature = 1;
+           if(labels.size()==0 || labels.get(0))  node.feature = 1;
            else node.feature = 0;
            return;
         }
@@ -46,7 +46,7 @@ public class TreeBuilder {
         node.feature = idx;
         node.children = new ArrayList<DecisionTreeImpl.Node>();
         DecisionTreeImpl.Node child = null;
-        indexes.remove(idx);
+        indexes.remove(new Integer(idx));
         List<Boolean> tempLabels = null;
         List<Enum[]> tempSamples = null;
         Enum[] answers = (Enum[]) samples.get(0)[0].getDeclaringClass().getEnumConstants();
@@ -61,6 +61,7 @@ public class TreeBuilder {
             samples.addAll(tempSamples);
             labels.addAll(tempLabels);
         }
+        indexes.add(new Integer(idx));
     }
 
     private List<Enum[]>    trimSamples(List<Enum[]> samples, int idx, Enum e) {
@@ -95,7 +96,6 @@ public class TreeBuilder {
         for(Enum[] e:samples) {
             if(!e[idx].equals(featureValue)) return false;
         }
-        System.out.println("constantRRR");
         return true;
     }
 
@@ -111,7 +111,7 @@ public class TreeBuilder {
         double maxValue = 0;
         for(Integer i:indexes) {
             double current = function.gain(samples,labels,i) ;
-            if(current>maxValue) {
+            if(current>=maxValue) {
                 maxIdx = i;
                 maxValue = current;
             }
@@ -133,7 +133,7 @@ public class TreeBuilder {
         array.add(tree.root);
         int i = 0;
         for(;i<tree.size();i++) {
-            List<DecisionTreeImpl.Node> children = array.get(0).children;
+            List<DecisionTreeImpl.Node> children = array.get(i).children;
             if(children==null) continue;
             array.addAll(children);
         }
