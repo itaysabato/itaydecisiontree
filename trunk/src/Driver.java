@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,6 +37,7 @@ public class Driver {
             makeTree(trainSet, trainSetLabels, testSet, testSetLabels, new InformationGainFunction());
             makeTree(trainSet, trainSetLabels, testSet, testSetLabels, new TrainingGainFunction());
             makeTree(trainSet, trainSetLabels, testSet, testSetLabels, new GiniGainFunction());
+
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -45,6 +47,8 @@ public class Driver {
     private static void makeTree(List<Enum[]> trainSet, List<Boolean> trainSetLabels, List<Enum[]> testSet, List<Boolean> testSetLabels, GainFunction gainFunction) {
         TreeBuilder treeBuilder = new TreeBuilder();
         ValidationErrorFunction errorFunction = new  ValidationErrorFunction();
+        double totalError = 0;
+        double testError = 0;
 
         DecisionTreeImpl tree =  treeBuilder.buildID3Tree(trainSet, trainSetLabels, gainFunction);
         System.out.println("Original tree using "+gainFunction+" gain function:");
@@ -53,15 +57,27 @@ public class Driver {
         System.out.println("Train Error: "+errorFunction.error(trainSet, trainSetLabels, tree));
         System.out.println("Test Error: "+errorFunction.error(testSet, testSetLabels, tree));
 
-//        DecisionTree validationTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new ValidationErrorFunction());
-//        System.out.println("Pruned tree using "+gainFunction+" gain function and Validation Error:");
-//        validationTree.plot(System.out);
-//        System.out.println("Test Error: "+errorFunction.error(testSet, testSetLabels, tree));
-//
-//        DecisionTree MDLTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new MDLErrorFunction());
-//        System.out.println("Pruned tree using "+gainFunction+" gain function and MDL Error:");
-//        MDLTree.plot(System.out);
-//        System.out.println("Test Error: "+errorFunction.error(testSet, testSetLabels, tree));
+        DecisionTree validationTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new ValidationErrorFunction());
+        System.out.println("Pruned tree using "+gainFunction+" gain function and Validation Error:");
+        validationTree.plot(System.out);
+
+        testError =  errorFunction.error(testSet, testSetLabels, tree);
+        System.out.println("Test Error: "+testError);
+
+        totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
+        totalError /= testSet.size() + trainSet.size();
+        System.out.println("Total Error (Cross Validation): "+totalError);
+
+        DecisionTree MDLTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new MDLErrorFunction());
+        System.out.println("Pruned tree using "+gainFunction+" gain function and MDL Error:");
+        MDLTree.plot(System.out);
+
+        testError =  errorFunction.error(testSet, testSetLabels, tree);
+        System.out.println("Test Error: "+testError);
+
+        totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
+        totalError /= testSet.size() + trainSet.size();
+        System.out.println("Total Error (Cross Validation): "+totalError);
     }
 
     private static void parseLine(String line, List<Enum[]> samples, List<Boolean> labels) {
@@ -81,7 +97,7 @@ public class Driver {
             if(values[i].equals("y")){
                 array[i] = Answer.YES;
             }
-            if(values[i].equals("n")){
+            else if(values[i].equals("n")){
                 array[i] = Answer.NO;
             }
             else {
