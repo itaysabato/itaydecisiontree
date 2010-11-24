@@ -56,17 +56,20 @@ public class Driver {
         System.out.println("Bifurcations: "+tree.bifurcationsCount());
         System.out.println("Train Error: "+errorFunction.error(trainSet, trainSetLabels, tree));
         System.out.println("Test Error: "+errorFunction.error(testSet, testSetLabels, tree));
+        System.out.println();
 
         DecisionTreeImpl validationTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new ValidationErrorFunction());
         System.out.println("Pruned tree using "+gainFunction+" gain function and Validation Error:");
         validationTree.plot(System.out);
 
         testError =  errorFunction.error(testSet, testSetLabels, validationTree);
-        System.out.println("Test Error: "+testError);
+        System.out.println("Test Error (Validation): "+testError);
+        System.out.println("Test Error (MDL Bound): "+testError);
 
         totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
         totalError /= testSet.size() + trainSet.size();
         System.out.println("Total Error (Cross Validation): "+totalError);
+        System.out.println();
 
         DecisionTreeImpl MDLTree = treeBuilder.pruneTree(tree, testSet, testSetLabels, new MDLErrorFunction());
         System.out.println("Pruned tree using "+gainFunction+" gain function and MDL Error:");
@@ -78,6 +81,7 @@ public class Driver {
         totalError = testError*testSet.size() +  errorFunction.error(trainSet, trainSetLabels, tree)*trainSet.size();
         totalError /= testSet.size() + trainSet.size();
         System.out.println("Total Error (Cross Validation): "+totalError);
+        System.out.println();                
     }
 
     private static void parseLine(String line, List<Enum[]> samples, List<Boolean> labels) {

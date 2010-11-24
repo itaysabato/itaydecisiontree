@@ -9,13 +9,14 @@ import java.util.List;
  */
 public class MDLErrorFunction implements GeneralizationErrorFunction {
 	
-	private static final double delta = 0.05;
+	private static final double DELTA = 0.05;
+
     public double error(List<Enum[]> samples, List<Boolean> labels, DecisionTree tree) {
-    	
+    	 double error = new ValidationErrorFunction().error(samples, labels, tree);
     	int d  = samples.get(0).length;
     	int n = tree.size();
     	int m = labels.size();
-    	return Math.sqrt((n*(Math.log(d)/Math.log(2)+1)+Math.log(2/delta)/Math.log(2))/(double)(2*m));
-    	//To change body of implemented methods use File | Settings | File Templates.
+    	return error + Math.sqrt(((n * (Math.log(d) + 1)) + Math.log(2 / DELTA))
+                        / (double) (2 * m));
     }
 }
